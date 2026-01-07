@@ -1,39 +1,23 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 
-function Square({index, number, ticked, clickable, rowNumber, colours, onSquareClick}) {
-    const boxSize = 34;
-    const padding = 20;
-    let onClick = clickable ? (() => onSquareClick(index)) : null;
-
-    let shouldHighlight = clickable && !ticked;
-    let style = shouldHighlight
-        ? {backgroundColor: colours.background}
-        : {backgroundColor: '#ccc'};
-    style.color = colours.foreground;
-    style.borderColor = colours.border;
-
+function Square({number, ticked, clickable, colours, onSquareClick}) {
     return <>
         <button
             className="square"
-            onClick={onClick}
-            style={style}
+            onClick={onSquareClick}
+            style={{
+                backgroundColor: ((clickable && !ticked) ?  colours.squareBackground : '#ccc'),
+                color: colours.foreground,
+                borderColor: colours.border,
+            }}
         >
             {number}
         </button>
     </>
 }
 
-function Cross({index, number, ticked, clickable, rowNumber, colours, onSquareClick}) {
+function Cross({ticked}) {
     const boxSize = 34;
-    const padding = 20;
-    let onClick = clickable ? (() => onSquareClick(index)) : null;
-
-    let shouldHighlight = clickable && !ticked;
-    let style = shouldHighlight
-        ? {backgroundColor: colours.background}
-        : {backgroundColor: '#ccc'};
-    style.color = colours.foreground;
-    style.borderColor = colours.border;
 
     return <>
         <svg
@@ -41,13 +25,13 @@ function Cross({index, number, ticked, clickable, rowNumber, colours, onSquareCl
             height={boxSize}
             xmlns="http://www.w3.org/2000/svg"
             style={{
-                "position": "relative",
-                "left": -1,
-                "top": -40,
-                "margin-right": -2,
+                position: "relative",
+                left: 1,
+                top: -35,
+                marginRight: -2,
+                pointerEvents: "none",
             }}
             visibility={ticked ? "visible" : "hidden"}
-            onClick={onClick}
         >
             <line x1="10%" y1="10%" x2="90%" y2="90%" stroke="black" />
             <line x1="90%" y1="10%" x2="10%" y2="90%" stroke="black" />
@@ -55,12 +39,16 @@ function Cross({index, number, ticked, clickable, rowNumber, colours, onSquareCl
     </>
 }
 
-function Row({rowNumber, numbers, colours}) {
+function Row({numbers, colours}) {
     function toggleSquare(index) {
         console.assert(canClick(index))
         const nextSquares = squares.slice();
         nextSquares[index] = !nextSquares[index];
         setSquares(nextSquares);
+    }
+
+    function getOnClick(index) {
+        return canClick(index) ? (() => toggleSquare(index)) : null;
     }
 
     function canClick(index) {
@@ -73,37 +61,29 @@ function Row({rowNumber, numbers, colours}) {
 
     const [squares, setSquares] = useState(numbers.slice().fill(false));
 
-    let squareJsx = squares.map((ticked, index) => (
-        <Square
-            index={index}
-            number={numbers[index]}
-            ticked={ticked}
-            clickable={canClick(index)}
-            rowNumber={rowNumber}
-            colours={colours}
-            onSquareClick={toggleSquare}
-        />
-    ));
-    let crossJsx = squares.map((ticked, index) => (
-        <Cross
-            index={index}
-            number={numbers[index]}
-            ticked={ticked}
-            clickable={canClick(index)}
-            rowNumber={rowNumber}
-            colours={colours}
-            onSquareClick={toggleSquare}
-        />
-    ));
+    function makeSquaresJsx() {
+        return squares.map((ticked, index) => (
+            <Square
+                number={numbers[index]}
+                ticked={ticked}
+                clickable={canClick(index)}
+                colours={colours}
+                onSquareClick={getOnClick(index)}
+            />
+        ));
+    }
+
     return <>
-        <div
-            style={{backgroundColor: colours.border}}
-            className="board-row"
-        >
-            {squareJsx}
-        </div>
-        <div className="board-row" style={{height: 0, margin: 0}}>
-            {crossJsx}
+        <div style={{backgroundColor: colours.rowBackground, marginBottom: 3}}>
+            <div
+                style={{backgroundColor: colours.border, margin: 2, marginBottom: 0}}
+                className="board-row"
+            >
+                {makeSquaresJsx()}
+            </div>
+            <div className="board-row" style={{height: 0, margin: 0}}>
+                {squares.map((ticked) => (<Cross ticked={ticked}/>))}
+            </div>
         </div>
     </>;
 }
@@ -113,32 +93,36 @@ export default function Board() {
         {
             numbers: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
             colours: {
+                rowBackground: '#e03a50',
                 border: '#9a2d39',
-                background: '#fbe0e5',
+                squareBackground: '#fbe0e5',
                 foreground: '#e03c52',
             },
         },
         {
             numbers: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
             colours: {
+                rowBackground: '#ffe462',
                 border: '#dca35d',
-                background: '#fafafa',
+                squareBackground: '#fafafa',
                 foreground: '#ffe462',
             },
         },
         {
             numbers: [12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2],
             colours: {
+                rowBackground: '#29a060',
                 border: '#347d55',
-                background: '#eaf3f1',
+                squareBackground: '#eaf3f1',
                 foreground: '#29a060',
             },
         },
         {
             numbers: [12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2],
             colours: {
+                rowBackground: '#384987',
                 border: '#2d2e49',
-                background: '#e4e0f1',
+                squareBackground: '#e4e0f1',
                 foreground: '#3a4a87',
             },
         },
