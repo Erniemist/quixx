@@ -33,8 +33,8 @@ function Cross({ticked}) {
             }}
             visibility={ticked ? "visible" : "hidden"}
         >
-            <line x1="10%" y1="10%" x2="90%" y2="90%" stroke="black" />
-            <line x1="90%" y1="10%" x2="10%" y2="90%" stroke="black" />
+            <line x1="20%" y1="20%" x2="80%" y2="80%" stroke="black" strokeWidth="3" strokeLinecap="round" />
+            <line x1="80%" y1="20%" x2="20%" y2="80%" stroke="black" strokeWidth="3" strokeLinecap="round" />
         </svg>
     </>
 }
@@ -91,7 +91,7 @@ function Row({numbers, colours}) {
 export default function Board() {
     let rowValues = [
         {
-            numbers: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+            numbers: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, "🔓"],
             colours: {
                 rowBackground: '#e03a50',
                 border: '#9a2d39',
@@ -100,7 +100,7 @@ export default function Board() {
             },
         },
         {
-            numbers: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+            numbers: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, "🔓"],
             colours: {
                 rowBackground: '#ffe462',
                 border: '#dca35d',
@@ -109,7 +109,7 @@ export default function Board() {
             },
         },
         {
-            numbers: [12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2],
+            numbers: [12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, "🔓"],
             colours: {
                 rowBackground: '#29a060',
                 border: '#347d55',
@@ -118,7 +118,7 @@ export default function Board() {
             },
         },
         {
-            numbers: [12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2],
+            numbers: [12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, "🔓"],
             colours: {
                 rowBackground: '#384987',
                 border: '#2d2e49',

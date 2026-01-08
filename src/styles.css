@@ -79,6 +79,8 @@ body {
   margin: 5px;
   Width: fit-content;
   border-radius: 5px;
+  display: flex;
+  flex-wrap: nowrap;
 }
 
 .board-row:after {
