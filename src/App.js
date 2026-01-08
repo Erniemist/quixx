@@ -1,42 +1,55 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 
-function Square({number, ticked, clickable, colours, onSquareClick}) {
+function Square({number, ticked, clickable, colours, size, borderWidth, onSquareClick}) {
+    let value = number;
+    if (ticked) {
+        value = 'X';
+    } else if (!clickable) {
+        value = '';
+    }
     return <>
         <button
             className="square"
             onClick={onSquareClick}
             style={{
+                width: size,
+                height: size,
+                fontSize: size * 0.7,
+                borderWidth: borderWidth,
+                borderStyle: 'solid',
+                borderRadius: size * 0.15,
+                textAlign: 'center center',
                 backgroundColor: ((clickable && !ticked) ?  colours.squareBackground : '#ccc'),
-                color: colours.foreground,
+                color: ticked ? '#000' : colours.foreground,
                 borderColor: colours.border,
             }}
         >
-            {number}
+            {value}
         </button>
     </>
 }
 
-function Cross({ticked}) {
-    const boxSize = 34;
 
-    return <>
-        <svg
-            width={boxSize}
-            height={boxSize}
-            xmlns="http://www.w3.org/2000/svg"
-            style={{
-                position: "relative",
-                left: 1,
-                top: -35,
-                marginRight: -2,
-                pointerEvents: "none",
-            }}
-            visibility={ticked ? "visible" : "hidden"}
-        >
-            <line x1="20%" y1="20%" x2="80%" y2="80%" stroke="black" strokeWidth="3" strokeLinecap="round" />
-            <line x1="80%" y1="20%" x2="20%" y2="80%" stroke="black" strokeWidth="3" strokeLinecap="round" />
-        </svg>
-    </>
+function getWindowDimensions() {
+    const { innerWidth: width, innerHeight: height } = window;
+    return {width, height};
+}
+
+function useWindowDimensions() {
+    const [windowDimensions, setWindowDimensions] = useState(
+        getWindowDimensions()
+    );
+
+    useEffect(() => {
+        function handleResize() {
+            setWindowDimensions(getWindowDimensions());
+        }
+
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
+    return windowDimensions;
 }
 
 function Row({numbers, colours}) {
@@ -61,28 +74,31 @@ function Row({numbers, colours}) {
 
     const [squares, setSquares] = useState(numbers.slice().fill(false));
 
-    function makeSquaresJsx() {
+    function makeSquaresJsx(squareSize, borderWidth) {
         return squares.map((ticked, index) => (
             <Square
                 number={numbers[index]}
                 ticked={ticked}
                 clickable={canClick(index)}
                 colours={colours}
+                size={squareSize}
+                borderWidth={borderWidth}
                 onSquareClick={getOnClick(index)}
             />
         ));
     }
 
+    let width = 1500;
+    let squareSize = width / squares.length;
+    let borderWidth = squareSize * 0.05;
+
     return <>
-        <div style={{backgroundColor: colours.rowBackground, marginBottom: 3}}>
+        <div style={{backgroundColor: colours.rowBackground, margin: squareSize * 0.06, width: width}}>
             <div
-                style={{backgroundColor: colours.border, margin: 2, marginBottom: 0}}
+                style={{backgroundColor: colours.border, margin: borderWidth}}
                 className="board-row"
             >
-                {makeSquaresJsx()}
-            </div>
-            <div className="board-row" style={{height: 0, margin: 0}}>
-                {squares.map((ticked) => (<Cross ticked={ticked}/>))}
+                {makeSquaresJsx(squareSize, borderWidth)}
             </div>
         </div>
     </>;
@@ -130,14 +146,14 @@ export default function Board() {
     return <div style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
         <h1>Quixx</h1>
         {
-            rowValues.map(
-                (row, rowNumber)=>
-                    <Row
-                        rowNumber={rowNumber}
-                        numbers={row.numbers}
-                        colours={row.colours}
-                    />
-            )
+            rowValues.map((
+                row,
+                rowNumber
+            ) => <Row
+                rowNumber={rowNumber}
+                numbers={row.numbers}
+                colours={row.colours}
+            />)
         }
     </div>
 }
