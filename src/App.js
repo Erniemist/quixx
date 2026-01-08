@@ -88,7 +88,7 @@ function Row({numbers, colours}) {
         ));
     }
 
-    let width = 1000;
+    let width = 750;
     let squareSize = width / squares.length;
     let borderWidth = squareSize * 0.05;
 
